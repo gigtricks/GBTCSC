@@ -192,8 +192,8 @@ contract('PrivateSale', function (accounts) {
             new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
             new BigNumber('87500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            icoSince, //_startTime
-            icoTill,//_endTime
+            [icoSince, icoTill],//_startTime
+            [icoTill+300, icoTill+8000],//_endTime
             150000000,
         );
         await Utils.checkState({privateSale, token, ico}, {

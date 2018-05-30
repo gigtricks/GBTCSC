@@ -8,7 +8,6 @@ contract CrowdSale is SellableToken {
     uint8 public constant PRE_ICO_TIER_LAST = 4;
     uint8 public constant ICO_TIER_FIRST = 5;
     uint8 public constant ICO_TIER_LAST = 12;
-    uint8 public constant LOCK_BALANCES_TO = 3;
 
     SellableToken public privateSale;
 
@@ -28,23 +27,24 @@ contract CrowdSale is SellableToken {
     function CrowdSale(
         address _token,
         address _etherHolder,
-        uint256 _maxPreICOTokenSupply,  //248500000000000000000000000
-        uint256 _maxICOTokenSupply, //87500000000000000000000000
+        uint256 _maxPreICOTokenSupply,
+    //10000000000000000000000000-527309544043097299200271 + 177500000000000000000000000 = 186972690455956902700799729
+        uint256 _maxICOTokenSupply, //62500000000000000000000000
         uint256 _price,
-        uint256 _startTime,
-        uint256 _endTime,
+        uint256[2] _preIcoDuration, //1530432000  -1533081599
+        uint256[2] _icoDuration, // 1533110400 - 1538351999
         uint256 _etherPriceInUSD
     ) public
     SellableToken(
         _token,
         _etherHolder,
-        _startTime,
-        _endTime,
+            _preIcoDuration[0],
+            _icoDuration[1],
         _maxPreICOTokenSupply.add(_maxICOTokenSupply),
         _etherPriceInUSD
     ) {
-        softCap = 500000000000;
-        hardCap = 5010477900000;
+        softCap = 250000000000;
+        hardCap = 3578912800000;
         price = _price;
         preICOStats.maxTokenSupply = _maxPreICOTokenSupply;
         //0.2480* 10^5
@@ -52,93 +52,93 @@ contract CrowdSale is SellableToken {
         tiers.push(
             Tier(
                 uint256(65),
-                _startTime,
-                _startTime.add(1 hours)
+                _preIcoDuration[0],
+                _preIcoDuration[0].add(1 hours)
             )
         );
         tiers.push(
             Tier(
                 uint256(60),
-                _startTime.add(1 hours),
-                _startTime.add(1 days)
+                _preIcoDuration[0].add(1 hours),
+                _preIcoDuration[0].add(1 days)
             )
         );
         tiers.push(
             Tier(
                 uint256(57),
-                _startTime.add(1 days),
-                _startTime.add(2 days)
+                _preIcoDuration[0].add(1 days),
+                _preIcoDuration[0].add(2 days)
             )
         );
         tiers.push(
             Tier(
                 uint256(55),
-                _startTime.add(2 days),
-                _startTime.add(3 days)
+                _preIcoDuration[0].add(2 days),
+                _preIcoDuration[0].add(3 days)
             )
         );
         tiers.push(
             Tier(
                 uint256(50),
-                _startTime.add(3 days),
-                _startTime.add(30 days)
+                _preIcoDuration[0].add(3 days),
+                _preIcoDuration[1]
             )
         );
         //ICO
         tiers.push(
             Tier(
                 uint256(25),
-                _startTime.add(30 days),
-                _startTime.add(30 days).add(1 weeks)
+                _icoDuration[0],
+                _icoDuration[0].add(1 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(15),
-                _startTime.add(30 days).add(1 weeks),
-                _startTime.add(30 days).add(2 weeks)
+                _icoDuration[0].add(1 weeks),
+                _icoDuration[0].add(2 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(10),
-                _startTime.add(30 days).add(2 weeks),
-                _startTime.add(30 days).add(3 weeks)
+                _icoDuration[0].add(2 weeks),
+                _icoDuration[0].add(3 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(6),
-                _startTime.add(30 days).add(3 weeks),
-                _startTime.add(30 days).add(4 weeks)
+                _icoDuration[0].add(3 weeks),
+                _icoDuration[0].add(4 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(4),
-                _startTime.add(30 days).add(4 weeks),
-                _startTime.add(30 days).add(5 weeks)
+                _icoDuration[0].add(4 weeks),
+                _icoDuration[0].add(5 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(2),
-                _startTime.add(30 days).add(5 weeks),
-                _startTime.add(30 days).add(6 weeks)
+                _icoDuration[0].add(5 weeks),
+                _icoDuration[0].add(6 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(0),
-                _startTime.add(30 days).add(6 weeks),
-                _startTime.add(30 days).add(7 weeks)
+                _icoDuration[0].add(6 weeks),
+                _icoDuration[0].add(7 weeks)
             )
         );
         tiers.push(
             Tier(
                 uint256(0),
-                _startTime.add(30 days).add(7 weeks),
-                _endTime
+                _icoDuration[0].add(7 weeks),
+                _icoDuration[1]
             )
         );
     }
@@ -168,6 +168,11 @@ contract CrowdSale is SellableToken {
 
     function withinPeriod() public view returns (bool) {
         return getActiveTier() != tiers.length;
+    }
+
+    function sendTreasuryTokens() public onlyOwner {
+        //  send tokens to  treasury
+        token.mint(0x00dEaFC5959Dd0E164bB00D06B08d972A276bf8E, uint256(100000000).mul(10 ** 18));
     }
 
     function setPrivateSale(address _privateSale) public onlyOwner {
@@ -367,9 +372,6 @@ contract CrowdSale is SellableToken {
 
         if (activeTier >= PRE_ICO_TIER_FIRST && activeTier <= PRE_ICO_TIER_LAST) {
             mintedAmount = mintPreICO(_address, tokenAmount, _value, usdAmount);
-            if (activeTier <= LOCK_BALANCES_TO) {
-                token.increaseLockedBalance(_address, mintedAmount);
-            }
             etherHolder.transfer(this.balance);
         } else {
             mintedAmount = mintInternal(_address, tokenAmount);

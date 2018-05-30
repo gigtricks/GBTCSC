@@ -215,11 +215,13 @@ contract('PrivateSale', function (accounts) {
         const ico = await ICO.new(
             token.address, //_token
             etherHolder, //_etherHolder
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
+            new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+            new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            icoSince, //_startTime
-            icoTill,//_endTime
+            [icoSince, icoSince+700],//_startTime
+            [icoSince+800, icoTill],//_endTime
+            // [1530432000,1533081599],
+            // [1533110400, 1538351999],
             150000000,
         );
         await Utils.checkState({token}, {
@@ -278,14 +280,16 @@ contract('PrivateSale', function (accounts) {
         const {token, privateSale} = await deploy();
 
 
-        let ico = await ICO.new(
+        ico = await ICO.new(
             token.address, //_token
             etherHolder, //_etherHolder
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
+            new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+            new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            icoSince, //_startTime
-            icoTill,//_endTime
+            [icoSince, icoSince+700],//_startTime
+            [icoSince+800, icoTill],//_endTime
+            // [1530432000,1533081599],
+            // [1533110400, 1538351999],
             150000000,
         );
         await token.setCrowdSale(ico.address);
@@ -307,11 +311,14 @@ contract('PrivateSale', function (accounts) {
         ico = await ICO.new(
             token.address, //_token
             etherHolder, //_etherHolder
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
+            new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+            new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            parseInt(new Date().getTime() / 1000 - (31556926 +2592000*2)),
-            parseInt(new Date().getTime() / 1000 - (31556926 + 2592000)),
+            [parseInt(new Date().getTime() / 1000 - (31556926 +2592000*2)), parseInt(new Date().getTime() / 1000 - (31556926 +2592000*1.5)),],//_startTime
+            [parseInt(new Date().getTime() / 1000 - (31556926 + 2500000)),  parseInt(new Date().getTime() / 1000 - (31556926 + 2592000))],//_endTime
+            // [1530432000,1533081599],
+            // [1530432000,1533081599],
+            // [1533110400, 1538351999],
             150000000,
         );
         await token.setCrowdSale(ico.address);
@@ -405,8 +412,10 @@ contract('PrivateSale', function (accounts) {
             new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
             new BigNumber('87500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            icoSince, //_startTime
-            icoTill,//_endTime
+            [icoSince, icoSince+700],//_startTime
+            [icoSince+800, icoTill],//_endTime
+            // [1530432000,1533081599],
+            // [1533110400, 1538351999],
             150000000,
         );
         await ico.burnUnsoldTokens()
@@ -754,11 +763,13 @@ contract('PrivateSale', function (accounts) {
         const ico = await ICO.new(
             token.address, //_token
             etherHolder, //_etherHolder
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
+            new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+            new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            parseInt(new Date().getTime() / 1000 - (31556926 +2592000*2)),
-            parseInt(new Date().getTime() / 1000 - (31556926 + 2592000)),
+            [parseInt(new Date().getTime() / 1000 - (31556926 +2592000*2)), parseInt(new Date().getTime() / 1000 - (31556926 +2592000*1.5)),],//_startTime
+            [parseInt(new Date().getTime() / 1000 - (31556926 + 2500000)),  parseInt(new Date().getTime() / 1000 - (31556926 + 2592000))],//_endTime
+            // [1530432000,1533081599],
+            // [1533110400, 1538351999],
             150000000,
         );
         assert.equal(await token.isTransferAllowed.call(accounts[0], new BigNumber('2017129032258064516129').valueOf()), false, 'isTransferAllowed is not equal');
@@ -856,11 +867,13 @@ contract('PrivateSale', function (accounts) {
         const ico = await ICO.new(
             token.address, //_token
             etherHolder, //_etherHolder
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
+            new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+            new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            parseInt(new Date().getTime() / 1000 - (31556926 +2592000*2)),
-            parseInt(new Date().getTime() / 1000 - (31556926 + 2592000)),
+            [parseInt(new Date().getTime() / 1000 - (31556926 +2592000*2)), parseInt(new Date().getTime() / 1000 - (31556926 +2592000*1.5)),],//_startTime
+            [parseInt(new Date().getTime() / 1000 - (31556926 + 2500000)),  parseInt(new Date().getTime() / 1000 - (31556926 + 2592000))],//_endTime
+            // [1530432000,1533081599],
+            // [1533110400, 1538351999],
             150000000,
         );
         assert.equal(await token.isTransferAllowed.call(accounts[0], new BigNumber('1008064516129032258064').valueOf()), false, 'isTransferAllowed is not equal');

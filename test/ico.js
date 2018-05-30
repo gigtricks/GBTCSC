@@ -37,11 +37,13 @@ async function deploy() {
     const ico = await ICO.new(
         token.address, //_token
         etherHolder, //_etherHolder
-        new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-        new BigNumber('87500000000000000000000000').valueOf(),//_maxTokenSupply
+        new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+        new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
         24800,
-        icoSince, //_startTime
-        icoTill,//_endTime
+        [icoSince, icoSince+700],//_startTime
+        [icoSince+800, icoTill],//_endTime
+        // [1530432000,1533081599],
+        // [1533110400, 1538351999],
         150000000,
     );
     await token.addMinter(ico.address);
@@ -56,14 +58,16 @@ contract('ICO', function (accounts) {
     it("deploy & check constructor info & setPreICO & setPrivateSale & updateTotalSupplyAndCollectedUsd", async function () {
         const {token, ico, allocations} = await deploy();
         await token.setCrowdSale(ico.address);
+        await token.addMinter(ico.address);
+        await ico.sendTreasuryTokens();
         await Utils.checkState({ico, token}, {
             ico: {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: etherHolder,
@@ -75,6 +79,12 @@ contract('ICO', function (accounts) {
                 allowedMultivests: [
                     {[accounts[0]]: true},
                     {[accounts[1]]: false},
+                ],
+            },
+            token: {
+                balanceOf: [
+                    {[accounts[0]]: 0},
+                    {["0x00dEaFC5959Dd0E164bB00D06B08d972A276bf8E"]: new BigNumber(100000000).mul(precision)},
                 ],
             }
         });
@@ -98,9 +108,9 @@ contract('ICO', function (accounts) {
                 token: accounts[2],
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: accounts[3],
@@ -115,7 +125,6 @@ contract('ICO', function (accounts) {
                 ],
             }
         });
-
     });
 
     it("check ", async function () {
@@ -132,9 +141,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: etherHolder,
@@ -162,11 +171,11 @@ contract('ICO', function (accounts) {
 
 
         //((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-65)/100))
-
         await makeTransactionKYC(ico, signAddress, accounts[3], new BigNumber('1').mul(precision).valueOf())
             .then(Utils.receiptShouldSucceed);
         let zal = await ico.calculateTokensAmount(new BigNumber('1').mul(precision).valueOf());
         console.log(zal[0]);
+        assert.equal(await ico.getActiveTier.call(), 0, "getActiveTier is not equal");
         await Utils.checkState({ico, token}, {
             token: {
                 //17281105990783410138248
@@ -179,9 +188,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: etherHolder,
@@ -227,9 +236,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 collectedEthers: 0,
                 etherHolder: etherHolder,
                 collectedUSD: 0,
@@ -271,9 +280,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: new BigNumber('8064516129032258064516').valueOf(),
                 collectedEthers: new BigNumber('1').mul(precision).valueOf(),
                 etherHolder: etherHolder,
@@ -304,9 +313,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 startTime: icoSince,
                 endTime: icoTill,
                 soldTokens: 0,
@@ -431,9 +440,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: etherHolder,
@@ -471,9 +480,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: new BigNumber('8064516129032258064516').valueOf(),
                 collectedEthers: new BigNumber('1').mul(precision).valueOf(),
                 etherHolder: etherHolder,
@@ -502,8 +511,8 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
                 maxTokenSupply: new BigNumber('8064516129032258064516').valueOf(),
                 soldTokens: new BigNumber('8064516129032258064516').valueOf(),
                 collectedEthers: new BigNumber('1').mul(precision).valueOf(),
@@ -531,9 +540,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: etherHolder,
@@ -571,9 +580,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: new BigNumber('8064516129032258064516').valueOf(),
                 collectedEthers: new BigNumber('1').mul(precision).valueOf(),
                 etherHolder: etherHolder,
@@ -594,12 +603,12 @@ contract('ICO', function (accounts) {
         const ico2 = await ICO.new(
             token.address, //_token
             etherHolder, //_etherHolder
-            new BigNumber('248500000000000000000000000').valueOf(),//_maxTokenSupply
-            new BigNumber('87500000000000000000000000').valueOf(),//_maxTokenSupply
+            new BigNumber('186972690455956902700799729').valueOf(),//_maxTokenSupply
+            new BigNumber('62500000000000000000000000').valueOf(),//_maxTokenSupply
             24800,
-            icoSince, //_startTime
-            icoTill,//_endTime
-            150000000,
+            [icoSince, icoTill],//_startTime
+            [icoTill+300, icoTill+8000],//_endTime
+            125000000,
         );
         await token.setCrowdSale(ico2.address);
         await ico.refund.call({from: accounts[3]})
@@ -624,9 +633,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: new BigNumber('8064516129032258064516').valueOf(),
                 collectedEthers: new BigNumber('1').mul(precision).valueOf(),
                 etherHolder: etherHolder,
@@ -651,9 +660,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 soldTokens: 0,
                 collectedEthers: 0,
                 etherHolder: etherHolder,
@@ -701,8 +710,8 @@ contract('ICO', function (accounts) {
             .then(Utils.receiptShouldSucceed);
 
         await Utils.checkEtherBalance(etherHolder, new BigNumber("1").mul(precision).add(etherHolderBalance).valueOf())
-        await ico.testChangeCollectedUSD(new BigNumber('5000000').mul(usdPrecision))
-        assert.equal(new BigNumber(await ico.collectedUSD.call()).valueOf(), new BigNumber('5000000').mul(usdPrecision).valueOf(), "collectedUSD is not equal");
+        await ico.testChangeCollectedUSD(new BigNumber('2500000').mul(usdPrecision))
+        assert.equal(new BigNumber(await ico.collectedUSD.call()).valueOf(), new BigNumber('2500000').mul(usdPrecision).valueOf(), "collectedUSD is not equal");
         await makeTransactionKYC(ico, signAddress, accounts[3], new BigNumber('1').mul(precision).valueOf())
         await Utils.checkEtherBalance(etherHolder, new BigNumber("3").mul(precision).add(etherHolderBalance).valueOf())
 
@@ -719,15 +728,15 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 startTime: start,
                 endTime: icoTill,
                 soldTokens: new BigNumber("7115749525616698292220").add("7115749525616698292220").add("7115749525616698292220").valueOf(),
                 collectedEthers: new BigNumber("3").mul(precision).valueOf(),
                 etherHolder: etherHolder,
-                collectedUSD: new BigNumber("500300000000").valueOf(),
+                collectedUSD: new BigNumber("250300000000").valueOf(),
                 etherBalances: [
                     {[accounts[0]]: 0},
                     {[accounts[1]]: 0},
@@ -756,9 +765,9 @@ contract('ICO', function (accounts) {
                 token: token.address,
                 minPurchase: new BigNumber('10000000').valueOf(),
                 maxPurchase: new BigNumber('0').mul(precision).valueOf(),
-                softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                hardCap: new BigNumber('50104779').mul(usdPrecision).valueOf(),
-                maxTokenSupply: new BigNumber('336000000000000000000000000').valueOf(),
+                softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
+                hardCap: new BigNumber('35789128').mul(usdPrecision).valueOf(),
+                maxTokenSupply: new BigNumber('249472690455956902700799729').valueOf(),
                 startTime: icoSince,
                 endTime: icoTill,
                 soldTokens: 0,

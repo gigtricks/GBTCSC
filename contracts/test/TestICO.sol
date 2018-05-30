@@ -12,8 +12,8 @@ contract TestICO is CrowdSale {
         uint256 _maxPreICOTokenSupply,  //248500000000000000000000000
         uint256 _maxICOTokenSupply, //87500000000000000000000000
         uint256 _price,
-        uint256 _startTime,
-        uint256 _endTime,
+        uint256[2] _preIcoDuration, //1530432000  -1533081599
+        uint256[2] _icoDuration, // 1533110400 - 1538351999
         uint256 _etherPriceInUSD
     ) public CrowdSale(
         _token,
@@ -21,8 +21,8 @@ contract TestICO is CrowdSale {
         _maxPreICOTokenSupply,
         _maxICOTokenSupply,
         _price,
-        _startTime,
-        _endTime,
+         _preIcoDuration, //1530432000  -1533081599
+         _icoDuration, // 1533110400 - 1538351999
         _etherPriceInUSD
     ) {}
 
