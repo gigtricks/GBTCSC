@@ -4,10 +4,10 @@ import './SellableToken.sol';
 
 
 contract CrowdSale is SellableToken {
-    uint8 public constant PRE_ICO_TIER_FIRST = 0;
-    uint8 public constant PRE_ICO_TIER_LAST = 4;
-    uint8 public constant ICO_TIER_FIRST = 5;
-    uint8 public constant ICO_TIER_LAST = 12;
+    uint256 public constant PRE_ICO_TIER_FIRST = 0;
+    uint256 public constant PRE_ICO_TIER_LAST = 4;
+    uint256 public constant ICO_TIER_FIRST = 5;
+    uint256 public constant ICO_TIER_LAST = 8;
 
     SellableToken public privateSale;
 
@@ -108,42 +108,15 @@ contract CrowdSale is SellableToken {
         );
         tiers.push(
             Tier(
-                uint256(6),
+                uint256(5),
                 _icoDuration[0].add(3 weeks),
-                _icoDuration[0].add(4 weeks)
-            )
-        );
-        tiers.push(
-            Tier(
-                uint256(4),
-                _icoDuration[0].add(4 weeks),
-                _icoDuration[0].add(5 weeks)
-            )
-        );
-        tiers.push(
-            Tier(
-                uint256(2),
-                _icoDuration[0].add(5 weeks),
-                _icoDuration[0].add(6 weeks)
-            )
-        );
-        tiers.push(
-            Tier(
-                uint256(0),
-                _icoDuration[0].add(6 weeks),
-                _icoDuration[0].add(7 weeks)
-            )
-        );
-        tiers.push(
-            Tier(
-                uint256(0),
-                _icoDuration[0].add(7 weeks),
                 _icoDuration[1]
             )
         );
+
     }
 
-    function changeICODates(uint8 _tierId, uint256 _start, uint256 _end) public onlyOwner {
+    function changeICODates(uint256 _tierId, uint256 _start, uint256 _end) public onlyOwner {
         require(_start != 0 && _start < _end && _tierId < tiers.length);
         Tier storage icoTier = tiers[_tierId];
         icoTier.startTime = _start;
@@ -170,32 +143,27 @@ contract CrowdSale is SellableToken {
         return getActiveTier() != tiers.length;
     }
 
-    function sendTreasuryTokens() public onlyOwner {
-        //  send tokens to  treasury
-        token.mint(0x00dEaFC5959Dd0E164bB00D06B08d972A276bf8E, uint256(100000000).mul(10 ** 18));
-    }
-
     function setPrivateSale(address _privateSale) public onlyOwner {
         if (_privateSale != address(0)) {
             privateSale = SellableToken(_privateSale);
         }
     }
 
-    function getActiveTier() public view returns (uint8) {
-        for (uint8 i = 0; i < tiers.length; i++) {
+    function getActiveTier() public view returns (uint256) {
+        for (uint256 i = 0; i < tiers.length; i++) {
             if (block.timestamp >= tiers[i].startTime && block.timestamp <= tiers[i].endTime) {
                 return i;
             }
         }
 
-        return uint8(tiers.length);
+        return uint256(tiers.length);
     }
 
     function calculateTokensAmount(uint256 _value) public view returns (uint256 tokenAmount, uint256 usdAmount) {
         if (_value == 0) {
             return (0, 0);
         }
-        uint8 activeTier = getActiveTier();
+        uint256 activeTier = getActiveTier();
 
         if (activeTier == tiers.length) {
             if (endTime < block.timestamp) {
@@ -221,7 +189,7 @@ contract CrowdSale is SellableToken {
             return (0, 0);
         }
 
-        uint8 activeTier = getActiveTier();
+        uint256 activeTier = getActiveTier();
 
         if (activeTier == tiers.length) {
             if (endTime < block.timestamp) {
@@ -251,7 +219,7 @@ contract CrowdSale is SellableToken {
         uint256 tokenPrice,
         uint256 tokensPerEth,
         uint256 tokensPerBtc,
-        uint256[39] tiersData
+        uint256[24] tiersData
     ) {
         sold = soldTokens;
         maxSupply = maxTokenSupply.sub(preICOStats.maxTokenSupply);
@@ -358,7 +326,7 @@ contract CrowdSale is SellableToken {
             return false;
         }
 
-        uint8 activeTier = getActiveTier();
+        uint256 activeTier = getActiveTier();
         if (activeTier == tiers.length) {
             return false;
         }

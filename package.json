@@ -21,9 +21,9 @@
   "scripts": {
     "lint": "npm run solhint",
     "ganache": "ganache-cli > /dev/null 2>&1 &",
-    "test": "truffle test",
-    "develop": "truffle develop",
-    "compile": "truffle compile",
+    "test": "./node_modules/.bin/truffle.cmd test",
+    "develop": "./node_modules/.bin/truffle.cmd develop",
+    "compile": "./node_modules/.bin/truffle.cmd compile",
     "coverage": "./node_modules/.bin/solidity-coverage",
     "migrate": "truffle migrate --network development",
     "solhint": "solhint 'contracts/**/*.sol'",
