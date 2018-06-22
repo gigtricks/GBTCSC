@@ -59,7 +59,6 @@ contract('ICO', function (accounts) {
         const {token, ico, allocations} = await deploy();
         await token.setCrowdSale(ico.address);
         await token.addMinter(ico.address);
-        await ico.sendTreasuryTokens();
         await Utils.checkState({ico, token}, {
             ico: {
                 token: token.address,
@@ -84,7 +83,6 @@ contract('ICO', function (accounts) {
             token: {
                 balanceOf: [
                     {[accounts[0]]: 0},
-                    {["0x00dEaFC5959Dd0E164bB00D06B08d972A276bf8E"]: new BigNumber(100000000).mul(precision)},
                 ],
             }
         });
@@ -395,41 +393,12 @@ contract('ICO', function (accounts) {
         assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
         await ico.changeICODates(7, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
         await ico.changeICODates(8, parseInt(new Date().getTime() / 1000 - 3600), parseInt(new Date().getTime() / 1000 + 3600 * 3 * 24));
-//((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-6)/100))
+//((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-5)/100))
         assert.equal(new BigNumber(await ico.getActiveTier.call()).valueOf(), 8, "getActiveTier is not equal");
         zal = await ico.calculateTokensAmount.call(await new BigNumber(web3.toWei('1', 'ether')));
-        assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6434454358270418668496').valueOf(), 'TokensAmount is not equal');
+        assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6366723259762308998302').valueOf(), 'TokensAmount is not equal');
         assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
-        await ico.changeICODates(8, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
-        await ico.changeICODates(9, parseInt(new Date().getTime() / 1000 - 3600), parseInt(new Date().getTime() / 1000 + 3600 * 3 * 24));
-//((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-4)/100))
-        assert.equal(new BigNumber(await ico.getActiveTier.call()).valueOf(), 9, "getActiveTier is not equal");
-        zal = await ico.calculateTokensAmount.call(await new BigNumber(web3.toWei('1', 'ether')));
-        assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6300403225806451612903').valueOf(), 'TokensAmount is not equal');
-        assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
-        await ico.changeICODates(9, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
-        await ico.changeICODates(10, parseInt(new Date().getTime() / 1000 - 3600), parseInt(new Date().getTime() / 1000 + 3600 * 3 * 24));
-//((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-2)/100))
-        assert.equal(new BigNumber(await ico.getActiveTier.call()).valueOf(), 10, "getActiveTier is not equal");
-        zal = await ico.calculateTokensAmount.call(await new BigNumber(web3.toWei('1', 'ether')));
-        assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6171823568136932192231').valueOf(), 'TokensAmount is not equal');
-        assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
-        await ico.changeICODates(10, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
-        await ico.changeICODates(11, parseInt(new Date().getTime() / 1000 - 3600), parseInt(new Date().getTime() / 1000 + 3600 * 3 * 24));
-//((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-0)/100))
-        assert.equal(new BigNumber(await ico.getActiveTier.call()).valueOf(), 11, "getActiveTier is not equal");
-        zal = await ico.calculateTokensAmount.call(await new BigNumber(web3.toWei('1', 'ether')));
-        assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6048387096774193548387').valueOf(), 'TokensAmount is not equal');
-        assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
-        await ico.changeICODates(11, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
-        await ico.changeICODates(12, parseInt(new Date().getTime() / 1000 - 3600), parseInt(new Date().getTime() / 1000 + 3600 * 3 * 24));
-//((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-0)/100))
-        assert.equal(new BigNumber(await ico.getActiveTier.call()).valueOf(), 12, "getActiveTier is not equal");
-        zal = await ico.calculateTokensAmount.call(await new BigNumber(web3.toWei('1', 'ether')));
-        assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6048387096774193548387').valueOf(), 'TokensAmount is not equal');
-        assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
-
-    });
+     });
 
 
     it("check burnTokens", async function () {
