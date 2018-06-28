@@ -219,7 +219,7 @@ contract CrowdSale is SellableToken {
         uint256 tokenPrice,
         uint256 tokensPerEth,
         uint256 tokensPerBtc,
-        uint256[24] tiersData
+        uint256[27] tiersData
     ) {
         sold = soldTokens;
         maxSupply = maxTokenSupply.sub(preICOStats.maxTokenSupply);

@@ -769,5 +769,6 @@ contract('ICO', function (accounts) {
         zal = await ico.calculateEthersAmount.call(new BigNumber('15120967741935483870967').valueOf());
         assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('999999999999999999').valueOf(), 'TokensAmount is not equal');
         assert.equal(new BigNumber(zal[1]).valueOf(), 149999999, 'USDAmount is not equal');
+        console.log(await ico.getStats.call(20).valueOf());
     });
 });
