@@ -103,7 +103,7 @@ contract StatsContract {
 
                 tokenAmount = usdAmount.div(crowdsale.price() * (100 - tiersData[activeTier.mul(3)]) / 100);
 
-                usdAmount = usdAmount.div(uint256(10) ** 18);
+                usdAmount = usdAmount.div(1e18);
 
                 if (usdAmount < crowdsale.minPurchase()) {
                     return (0, 0);
