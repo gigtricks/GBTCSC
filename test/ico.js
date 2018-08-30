@@ -2,6 +2,7 @@ var
     PrivateSale = artifacts.require("./PrivateSale.sol"),
     ICO = artifacts.require("./test/TestICO.sol"),
     Gig = artifacts.require("./GigToken.sol"),
+    Stats = artifacts.require("./StatsContract.sol"),
     // SupplyBlocAllocation = artifacts.require("./SupplyBlocAllocation.sol"),
 
     Utils = require("./utils"),
@@ -124,7 +125,6 @@ contract('ICO', function (accounts) {
             }
         });
     });
-
     it("check ", async function () {
         const {token, ico, allocations} = await deploy();
         await token.setCrowdSale(ico.address);
@@ -171,6 +171,24 @@ contract('ICO', function (accounts) {
         //((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-65)/100))
         await makeTransactionKYC(ico, signAddress, accounts[3], new BigNumber('1').mul(precision).valueOf())
             .then(Utils.receiptShouldSucceed);
+        const stats = await Stats.new(ico.address);
+        let statistic = await stats.getStats.call(new BigNumber("4").mul(precision)).valueOf();
+        // statistic
+        assert.equal(new BigNumber(statistic[0][0]).valueOf(), new BigNumber(icoSince).valueOf(), 'startDate is not equal');
+        assert.equal(new BigNumber(statistic[0][1]).valueOf(), new BigNumber(icoTill).valueOf(), 'endDate is not equal');
+        assert.equal(new BigNumber(statistic[1][0]).valueOf(), new BigNumber('17281105990783410138248').valueOf(), 'sold is not equal');
+        assert.equal(new BigNumber(statistic[1][1]).valueOf(), new BigNumber('62500000000000000000000000').valueOf(), 'maxSupply is not equal');
+        assert.equal(new BigNumber(statistic[1][2]).valueOf(), new BigNumber(10000000).valueOf(), 'min is not equal');
+        assert.equal(new BigNumber(statistic[1][3]).valueOf(), new BigNumber(250000000000).valueOf(), 'soft is not equal');
+        assert.equal(new BigNumber(statistic[1][4]).valueOf(), new BigNumber(3578912800000).valueOf(), 'hard is not equal');
+        assert.equal(new BigNumber(statistic[1][5]).valueOf(), parseInt(new BigNumber(usdPrecision).mul(precision).div(24800).valueOf()), 'tokensPerUSD is not equal');
+        // usdAmount.div(price * (100 - tiers[activeTier].discount) / 100);
+        // (((10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-65)/100))
+        assert.equal(new BigNumber(statistic[1][6]).valueOf(), new BigNumber("17281105990783410138248").valueOf(), 'tokensPerEth is not equal');
+        // ((4*(10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-65)/100))
+        assert.equal(new BigNumber(statistic[1][7]).valueOf(), new BigNumber("69124423963133640552995").valueOf(), 'tokensPerBtc is not equal');
+        assert.equal(new BigNumber(statistic[2][0]).valueOf(), 0, 'ActiveTier is not equal');
+        assert.equal(new BigNumber(statistic[2][1]).valueOf(), 0, 'actualTier is not equal');
         let zal = await ico.calculateTokensAmount(new BigNumber('1').mul(precision).valueOf());
         console.log(zal[0]);
         assert.equal(await ico.getActiveTier.call(), 0, "getActiveTier is not equal");
@@ -302,7 +320,6 @@ contract('ICO', function (accounts) {
         assert.equal(preICOStats[3], false, "burned is not equal");
 
     });
-
     it("check calculateTokensAmount ", async function () {
         const {token, ico, allocations} = await deploy();
         await token.setCrowdSale(ico.address);
@@ -399,8 +416,6 @@ contract('ICO', function (accounts) {
         assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('6366723259762308998302').valueOf(), 'TokensAmount is not equal');
         assert.equal(new BigNumber(zal[1]).valueOf(), 150000000, 'USDAmount is not equal');
      });
-
-
     it("check burnTokens", async function () {
         const {token, ico, allocations} = await deploy();
         await token.setCrowdSale(ico.address);
@@ -499,7 +514,6 @@ contract('ICO', function (accounts) {
         });
 
     });
-
     it("check ico period & colecting USD", async function () {
         const {token, ico, allocations} = await deploy();
         await token.setCrowdSale(ico.address);
@@ -763,12 +777,47 @@ contract('ICO', function (accounts) {
         assert.equal(new BigNumber(zal[1]).valueOf(), 149999999, 'USDAmount is not equal');
 
 
-        await ico.changeICODates(0, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
-        await ico.changeICODates(1, parseInt(new Date().getTime() / 1000 - 3600), parseInt(new Date().getTime() / 1000 + 3600));
+        await ico.changeICODates(0, icoSince - 3600 * 2, icoSince - 3600);
+        await ico.changeICODates(1, icoSince-600, icoTill);
         // (15120967741935483870967* (0.2480 * 10 ^ 5*(100-60)/100))/1500*10^5
         zal = await ico.calculateEthersAmount.call(new BigNumber('15120967741935483870967').valueOf());
         assert.equal(new BigNumber(zal[0]).valueOf(), new BigNumber('999999999999999999').valueOf(), 'TokensAmount is not equal');
         assert.equal(new BigNumber(zal[1]).valueOf(), 149999999, 'USDAmount is not equal');
-        console.log(await ico.getStats.call(20).valueOf());
+        const stats = await Stats.new(ico.address);
+        let statistic = await stats.getStats.call(new BigNumber("4").mul(precision)).valueOf();
+        // statistic
+        assert.equal(new BigNumber(statistic[0][0]).valueOf(), new BigNumber(icoSince - 3600*2).valueOf(), 'startDate is not equal');
+        assert.equal(new BigNumber(statistic[0][1]).valueOf(), new BigNumber(icoTill).valueOf(), 'endDate is not equal');
+        assert.equal(new BigNumber(statistic[1][0]).valueOf(), new BigNumber(0).valueOf(), 'sold is not equal');
+        assert.equal(new BigNumber(statistic[1][1]).valueOf(), new BigNumber('62500000000000000000000000').valueOf(), 'maxSupply is not equal');
+        assert.equal(new BigNumber(statistic[1][2]).valueOf(), new BigNumber(10000000).valueOf(), 'min is not equal');
+        assert.equal(new BigNumber(statistic[1][3]).valueOf(), new BigNumber(250000000000).valueOf(), 'soft is not equal');
+        assert.equal(new BigNumber(statistic[1][4]).valueOf(), new BigNumber(3578912800000).valueOf(), 'hard is not equal');
+        assert.equal(new BigNumber(statistic[1][5]).valueOf(), parseInt(new BigNumber(usdPrecision).mul(precision).div(24800).valueOf()), 'tokensPerUSD is not equal');
+        // usdAmount.div(price * (100 - tiers[activeTier].discount) / 100);
+        // ((1*(10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-60)/100))
+        assert.equal(new BigNumber(statistic[1][6]).valueOf(), new BigNumber("15120967741935483870967").valueOf(), 'tokensPerEth is not equal');
+        // ((4*(10 ^ 18) * (1500 * 10 ^ 5) / (0.2480 * 10 ^ 5*(100-60)/100))
+        assert.equal(new BigNumber(statistic[1][7]).valueOf(), new BigNumber("60483870967741935483870").valueOf(), 'tokensPerBtc is not equal');
+        assert.equal(new BigNumber(statistic[2][0]).valueOf(), 1, 'ActiveTier is not equal');
+        assert.equal(new BigNumber(statistic[2][1]).valueOf(), 1, 'actualTier is not equal');
+          console.log(new BigNumber(statistic[3][0]).valueOf());
+          console.log(new BigNumber(statistic[3][1]).valueOf());
+          console.log(new BigNumber(statistic[3][2]).valueOf());
+            // uint256[27] tiersData
+
+        await ico.changeICODates(0, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
+        await ico.changeICODates(1, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
+        await ico.changeICODates(2, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
+        await ico.changeICODates(3, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
+        await ico.changeICODates(4, parseInt(new Date().getTime() / 1000 - 3600 * 2), parseInt(new Date().getTime() / 1000 - 3600));
+        await ico.changeICODates(5, parseInt(new Date().getTime() / 1000 + 3600), parseInt(new Date().getTime() / 1000 + 3600 * 2 * 24));
+
+        // zal = await ico.calculateTokensAmount(new BigNumber('1').mul(precision).valueOf());
+        // console.log(zal[0]);
+         statistic = await stats.getStats.call(new BigNumber("4").mul(precision)).valueOf();
+
+        assert.equal(new BigNumber(statistic[2][0]).valueOf(), 9, 'ActiveTier is not equal');
+        assert.equal(new BigNumber(statistic[2][1]).valueOf(), 5, 'actualTier is not equal');
     });
 });
